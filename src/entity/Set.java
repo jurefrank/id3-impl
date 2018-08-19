@@ -1,7 +1,9 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
+//Contains entity
 public class Set
 {
 	private String[] attributeNames;
@@ -9,7 +11,7 @@ public class Set
 
 	public Set()
 	{
-		this(null, null);
+		this(null, new ArrayList<>());
 	}
 
 	public Set(String[] attributeNames, List<Entity> allEntries)

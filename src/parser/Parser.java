@@ -48,12 +48,13 @@ public class Parser
 		} catch (FileNotFoundException e)
 		{
 			e.printStackTrace();
+			return false;
 		} catch (IOException e)
 		{
 			e.printStackTrace();
+			return false;
 		}
-
-		return false;
+		return true;
 	}
 
 	private String[] trimArray(String[] splitLine)
