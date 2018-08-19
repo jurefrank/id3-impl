@@ -3,12 +3,14 @@ package core;
 import java.io.File;
 
 import entity.Set;
-import id3.Id3;
+import id3.Entropy;
+import id3.InformationGain;
 import parser.Parser;
 
 public class Main
 {
 	public static boolean isDebbuging = false;
+	public static boolean isCalculatingInformationGain = true;
 
 	public static void main(String[] args) throws Exception
 	{
@@ -17,7 +19,10 @@ public class Main
 		Parser parser = new Parser(set, file);
 		if (!parser.parse(";"))
 			throw new Exception();
-		System.out.println(new Id3().entropy(set, 0));
+		if (isCalculatingInformationGain)
+			System.out.println(new InformationGain().informationGain(set.getAllParameterEntries(), 0));
+		else
+			System.out.println(new Entropy().entropy(set.getAllParameterEntries(), 0));
 		System.out.println("Finished");
 
 	}
