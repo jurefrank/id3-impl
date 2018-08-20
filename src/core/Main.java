@@ -3,9 +3,7 @@ package core;
 import java.io.File;
 
 import entity.Set;
-import id3.Entropy;
 import id3.Id3;
-import id3.InformationGain;
 import parser.Parser;
 
 public class Main
@@ -15,12 +13,14 @@ public class Main
 
 	public static void main(String[] args) throws Exception
 	{
-		File file = new File("C:\\Users\\Jure\\Desktop\\processMe");
+		File file = new File("processMe");
 		Set set = new Set();
 		Parser parser = new Parser(set, file);
 		if (!parser.parse(";"))
 			throw new Exception();
-		new Id3().startId3(set.getAllParameterEntries());
+		Id3 id3 = new Id3(set.getAttributeNames());
+		id3.startId3(set.getAllParameterEntries());
+		System.out.println(id3.getDecisionTree());
 		// if (isCalculatingInformationGain)
 		// System.out.println(new
 		// InformationGain().informationGain(set.getAllParameterEntries(), 0));

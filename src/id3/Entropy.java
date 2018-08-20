@@ -6,7 +6,6 @@ import java.util.List;
 
 import core.Main;
 import entity.Entity;
-import entity.Set;
 import util.MathEq;
 
 public class Entropy

@@ -7,9 +7,11 @@ import entity.Entity;
 
 public class InformationGain
 {
+	private Entropy entropy;
+
 	public double informationGain(List<Entity> allEntities, int predictor)
 	{
-		Entropy entropy = new Entropy();
+		entropy = new Entropy();
 		double entropyOfAtribute = entropy.entropy(allEntities, predictor);
 		HashMap<String, Integer> allClassifications = allClassifications(allEntities);
 		double entropyOfClassification = entropy.calculateE(allClassifications);
@@ -28,5 +30,10 @@ public class InformationGain
 			ret.put(classification, value);
 		}
 		return ret;
+	}
+
+	public Entropy getEntropy()
+	{
+		return entropy;
 	}
 }
