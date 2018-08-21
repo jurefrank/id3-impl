@@ -138,6 +138,7 @@ public class Id3
 			}
 		}
 
+		//Error couldnt split better to only have the same classification what now?
 		if (predictor == -1)
 		{
 			String classification = null;

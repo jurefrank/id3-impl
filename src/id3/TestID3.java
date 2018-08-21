@@ -126,6 +126,8 @@ public class TestID3
 
 	private void recursive(Node node, Entity entity, String[] attributes)
 	{
+		if (node == null)
+			return;
 		if (node.getChildren() == null)
 		{
 			String modelClass = node.getValue();
