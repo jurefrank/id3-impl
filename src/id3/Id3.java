@@ -5,7 +5,6 @@ import java.util.List;
 
 import decisiontree.Node;
 import entity.Entity;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Id3
 {
@@ -100,19 +99,13 @@ public class Id3
 		if (useInformationGain)
 			informationGainID3(allEntities, allPredictors, decisionTree);
 		else
-			throw new NotImplementedException();
+			entropyID3(allEntities, allPredictors, decisionTree);
 	}
 
 	private void informationGainID3(List<Entity> allEntities, List<Integer> allPredictors, Node node) throws Exception
 	{
 		// DECLARE STATES WHERE ID3 IS FINISHED
 
-		// If all atributes are proccessed
-		// if (allPredictors.size() == 0)
-		// {
-		// // ADD CLASSIFICATION
-		// return;
-		// }
 
 		InformationGain ig = new InformationGain();
 
@@ -135,6 +128,89 @@ public class Id3
 				predictor = _predictor;
 				children = new ArrayList<>();
 				for (String key : ig.getEntropy().getMapppedSet().keySet())
+				{
+					Node _child = new Node();
+					_child.setValue(key);
+					_child.setParent(node);
+					_child.setIsAttributeName(false);
+					children.add(_child);
+				}
+			}
+		}
+
+		if (predictor == -1)
+		{
+			String classification = null;
+			for (Entity ent : allEntities)
+				if (classification == null)
+					classification = ent.getClassification();
+				else if (!classification.equals(ent.getClassification()))
+					throw new Exception("Something went from predictor is -1 but classification isnt the same");
+			Node classificated = new Node();
+			classificated.setChildren(null);
+			classificated.setParent(node);
+			classificated.setValue(classification);
+			node.getChildren().add(classificated);
+			return;
+		}
+
+		if (node.getParent() == null)
+		{
+			node.setValue(attributes[predictor]);
+			node.setIsAttributeName(true);
+			node.setChildren(children);
+		}
+
+		else
+		{
+			Node _child = new Node();
+			_child.setValue(attributes[predictor]);
+			_child.setParent(node);
+			_child.setChildren(children);
+			_child.setIsAttributeName(true);
+			node.getChildren().add(_child);
+		}
+
+		allPredictors.remove((Object) predictor);
+
+		// Check if node child is Atribute and set node to be atribute
+		// because it has children which are values
+		if (node.getChildren().size() == 1 && node.getChildren().get(0).isAttributeName())
+		{
+			node = node.getChildren().get(0);
+		}
+
+		for (Node child : node.getChildren())
+		{
+			// Split set to subset
+			List<Entity> subset = getSubset(child.getValue(), allEntities, predictor);
+			informationGainID3(subset, allPredictors, child);
+		}
+
+	}
+
+	private void entropyID3(List<Entity> allEntities, List<Integer> allPredictors, Node node) throws Exception
+	{
+		Entropy entropy = new Entropy();
+
+		List<Node> children = new ArrayList<>();
+
+		// Calculate max ig (information gain)
+		// Use max ig atribute as root node
+		double minEntropy = Double.MAX_VALUE;
+		int predictor = -1;
+
+		// Goes through all predictors or atributes
+		// to find max ig and set children
+		for (int _predictor : allPredictors)
+		{
+			double _temp = entropy.entropy(allEntities, _predictor);
+			if (minEntropy > _temp)
+			{
+				minEntropy = _temp;
+				predictor = _predictor;
+				children = new ArrayList<>();
+				for (String key : entropy.getMapppedSet().keySet())
 				{
 					Node _child = new Node();
 					_child.setValue(key);

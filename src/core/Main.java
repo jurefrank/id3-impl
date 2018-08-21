@@ -9,7 +9,7 @@ import parser.Parser;
 public class Main
 {
 	public static boolean isDebbuging = false;
-	public static boolean isCalculatingInformationGain = true;
+	public static boolean isCalculatingInformationGain = false;
 
 	public static void main(String[] args) throws Exception
 	{
@@ -18,7 +18,7 @@ public class Main
 		Parser parser = new Parser(set, file);
 		if (!parser.parse(";"))
 			throw new Exception();
-		Id3 id3 = new Id3(set.getAttributeNames());
+		Id3 id3 = new Id3(isCalculatingInformationGain, set.getAttributeNames());
 		id3.startId3(set.getAllParameterEntries());
 		System.out.println(id3.getDecisionTree());
 		// if (isCalculatingInformationGain)
