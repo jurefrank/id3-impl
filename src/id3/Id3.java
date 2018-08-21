@@ -1,6 +1,7 @@
 package id3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import decisiontree.Node;
@@ -106,7 +107,6 @@ public class Id3
 	{
 		// DECLARE STATES WHERE ID3 IS FINISHED
 
-
 		InformationGain ig = new InformationGain();
 
 		// ig entropy is different after for loop is ended
@@ -138,15 +138,25 @@ public class Id3
 			}
 		}
 
-		//Error couldnt split better to only have the same classification what now?
+		// Error couldnt split better to only have the same classification what now?
 		if (predictor == -1)
 		{
-			String classification = null;
+			HashMap<String, Integer> allValues = new HashMap<>();
+			int tmp;
+			Integer _tmp;
 			for (Entity ent : allEntities)
-				if (classification == null)
-					classification = ent.getClassification();
-				else if (!classification.equals(ent.getClassification()))
-					throw new Exception("Something went from predictor is -1 but classification isnt the same");
+				allValues.put(ent.getClassification(),
+						(_tmp = allValues.get(ent.getClassification())) == null ? 1 : ++_tmp);
+
+			String classification = "";
+			int max = Integer.MIN_VALUE;
+			for (String key : allValues.keySet())
+				if ((tmp = allValues.get(key)) > max)
+				{
+					max = tmp;
+					classification = key;
+				}
+
 			Node classificated = new Node();
 			classificated.setChildren(null);
 			classificated.setParent(node);
@@ -224,12 +234,22 @@ public class Id3
 
 		if (predictor == -1)
 		{
-			String classification = null;
+			HashMap<String, Integer> allValues = new HashMap<>();
+			int tmp;
+			Integer _tmp;
 			for (Entity ent : allEntities)
-				if (classification == null)
-					classification = ent.getClassification();
-				else if (!classification.equals(ent.getClassification()))
-					throw new Exception("Something went from predictor is -1 but classification isnt the same");
+				allValues.put(ent.getClassification(),
+						(_tmp = allValues.get(ent.getClassification())) == null ? 1 : ++_tmp);
+
+			String classification = "";
+			int max = Integer.MIN_VALUE;
+			for (String key : allValues.keySet())
+				if ((tmp = allValues.get(key)) > max)
+				{
+					max = tmp;
+					classification = key;
+				}
+
 			Node classificated = new Node();
 			classificated.setChildren(null);
 			classificated.setParent(node);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import core.Main;
 import entity.Entity;
 import util.MathEq;
 
@@ -29,7 +28,7 @@ public class Entropy
 		// Convert set into hashed map
 		HashMap<String, HashMap<String, Integer>> occurances = mappedSetInit(predictor, allEntities);
 
-		//Calculate entropy for atribute
+		// Calculate entropy for atribute
 		return calculateEntropy(occurances, allEntities.size());
 
 		// Entropy = P1*E1 + P2*E2
@@ -69,20 +68,10 @@ public class Entropy
 				sum += _classifications.get(_key);
 			}
 
-			// Debugging purpose
-			if (Main.isDebbuging)
-				dbgPrntEntropyEquation(sum, (double) count, calculateE(_classifications));
-
 			result += (sum / (double) count) * calculateE(_classifications);
 
 		}
 		return result;
-	}
-
-	private void dbgPrntEntropyEquation(int sum, double count, double d)
-	{
-		System.out.printf("(%d / %f) * %f%n", sum, (double) count, d);
-
 	}
 
 	public double calculateE(HashMap<String, Integer> _classifications)
