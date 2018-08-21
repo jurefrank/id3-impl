@@ -165,4 +165,14 @@ public class TestID3
 		}
 		return -1;
 	}
+
+	public int[][] getConfusionMatrix()
+	{
+		return confusionMatrix;
+	}
+
+	public List<String> getClasses()
+	{
+		return classes;
+	}
 }
