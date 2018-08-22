@@ -33,23 +33,54 @@ public class TestID3
 
 	public double accuracy()
 	{
-		if (hasCompleted)
+		double accuracy = 0;
+		int allClasses = allClasses();
+		for (int i = 0; i < confusionMatrix.length; i++)
 		{
-			int sum = 0;
-			for (int[] rows : confusionMatrix)
-			{
-				for (int val : rows)
-				{
-					sum += val;
-				}
-			}
-			int correct = 0;
-			for (int i = 0; i < confusionMatrix.length; i++)
-				correct += confusionMatrix[i][i];
+			accuracy += (allOfClass(i) / (double) allClasses) * accuracyOfClass(i);
+		}
+		return accuracy;
+	}
 
-			return correct / (double) sum;
-		} else
-			return -1;
+	// RECALL GLEJ DOL
+	// PRECISION GLEJ VODORAVNO
+	public double accuracyOfClass(int classLine)
+	{
+		int tp = 0;
+		int tn = 0;
+		int fp = 0;
+		int fn = 0;
+
+		tp = confusionMatrix[classLine][classLine];
+
+		for (int i = 0; i < confusionMatrix.length; i++)
+		{
+			if (i == classLine)
+				continue;
+			for (int j = 0; j < confusionMatrix.length; j++)
+			{
+				if (j == classLine)
+					continue;
+				tn += confusionMatrix[i][j];
+			}
+		}
+
+		for (int i = 0; i < confusionMatrix[classLine].length; i++)
+		{
+			if (i == classLine)
+				continue;
+			fn += confusionMatrix[classLine][i];
+		}
+
+		for (int i = 0; i < confusionMatrix.length; i++)
+		{
+			if (i == classLine)
+				continue;
+			fp += confusionMatrix[i][classLine];
+		}
+
+		return (tp + tn) / (double) (tp + tn + fp + fn);
+
 	}
 
 	// sensitivity
@@ -58,47 +89,52 @@ public class TestID3
 		if (!hasCompleted)
 			return -1;
 
-		double sumSens = 0;
-		int count = 0;
+		double recall = 0;
+		int allClasses = allClasses();
 		for (int i = 0; i < confusionMatrix.length; i++)
 		{
-			int sum = 0;
-			for (int val : confusionMatrix[i])
-			{
-				sum += val;
-			}
-			int correct = confusionMatrix[i][i];
-			double sensitivity = correct / (double) sum;
-			sumSens += sensitivity;
-			count++;
+			recall += (allOfClass(i) / (double) allClasses) * recallOfClass(i);
 		}
-		return sumSens / (double) count;
+
+		return recall;
 
 	}
 
-	// xoo
-	// xoo
-	// xoo
+	public double recallOfClass(int classLine)
+	{
+		int[] line = confusionMatrix[classLine];
+		int correct = 0;
+		int divide = 0;
+		for (int i = 0; i < line.length; i++)
+			divide += line[i];
+		correct = line[classLine];
+
+		return correct / (double) divide;
+	}
+
 	public double precision()
 	{
 		if (!hasCompleted)
 			return -1;
 
-		double sumSens = 0;
-		int count = 0;
+		double precision = 0;
+		int allClasses = allClasses();
 		for (int i = 0; i < confusionMatrix.length; i++)
 		{
-			int sum = 0;
-			for (int j = 0; j < confusionMatrix.length; j++)
-			{
-				sum += confusionMatrix[j][i];
-			}
-			int correct = confusionMatrix[i][i];
-			double sensitivity = correct / (double) sum;
-			sumSens += sensitivity;
-			count++;
+			precision += (allOfClass(i) / (double) allClasses) * precisionOfClass(i);
 		}
-		return sumSens / (double) count;
+		return precision;
+	}
+
+	public double precisionOfClass(int classLine)
+	{
+		int correct = 0;
+		int divide = 0;
+		for (int i = 0; i < confusionMatrix.length; i++)
+			divide += confusionMatrix[i][classLine];
+		correct = confusionMatrix[classLine][classLine];
+
+		return correct / (double) divide;
 	}
 
 	public double FScore()
@@ -106,7 +142,51 @@ public class TestID3
 		if (!hasCompleted)
 			return -1;
 
-		return (2 * precision() * recall()) / (double) (precision() + recall());
+		List<Double> precisions = new ArrayList<>();
+		List<Double> recalls = new ArrayList<>();
+		List<Double> fscores = new ArrayList<>();
+
+		// Fill precisions and recalls
+		fillArrays(precisions, recalls, fscores);
+
+		double fscore = 0;
+		int allClasses = allClasses();
+		for (int i = 0; i < fscores.size(); i++)
+		{
+			double fscoreI = fscores.get(i);
+			if (Double.isNaN(fscoreI))
+				fscoreI = 0;
+			fscore += (allOfClass(i) / (double) allClasses) * fscoreI;
+		}
+		return fscore;
+		// return (2 * precision() * recall()) / (double) (precision() + recall());
+	}
+
+	private void fillArrays(List<Double> precisions, List<Double> recalls, List<Double> fscores)
+	{
+		for (int i = 0; i < confusionMatrix.length; i++)
+		{
+			precisions.add(precisionOfClass(i));
+			recalls.add(recallOfClass(i));
+			fscores.add((2 * precisions.get(i) * recalls.get(i)) / (precisions.get(i) + recalls.get(i)));
+		}
+	}
+
+	private int allOfClass(int classLine)
+	{
+		int result = 0;
+		for (int value : confusionMatrix[classLine])
+			result += value;
+		return result;
+	}
+
+	private int allClasses()
+	{
+		int result = 0;
+		for (int[] values : confusionMatrix)
+			for (int value : values)
+				result += value;
+		return result;
 	}
 
 	private int getCount(List<Entity> testEntities)
